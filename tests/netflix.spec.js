@@ -1,7 +1,7 @@
 const { test, expect } = require("@playwright/test");
 
 // run tests in headful mode so you can see the browser
-test.use({ headless: false, slowMo: 1000 });
+test.use({ headless: true, slowMo: 1000 });
 test.beforeEach(async({page}) => {
   await page.goto('http://www.netflix.com');
 })

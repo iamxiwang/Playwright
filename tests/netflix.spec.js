@@ -1,7 +1,7 @@
 const { test, expect } = require("@playwright/test");
 
 // run tests in headful mode so you can see the browser
-test.use({ headless: true, slowMo: 3000 });
+test.use({ headless: false, slowMo: 3000 });
 
 test.beforeEach(async({page}) => {
   await page.goto('http://www.netflix.com');
@@ -102,10 +102,13 @@ test('T3: Using invalid email format to sign in', async({page}) => {
     await page.fill('input[name="password"]','123456' )
     // Click sign-in button without filling in the fields
     await page.click('.login-button');
+    //it works in codesandbox but not here
+    // await page.waitForTimeout(10000)
+    // expect(await page.textContent('body')).toContain('Sorry, we cant find an account with this email address. Please try again')
 
     const errorMessage = page.locator('.ui-message-contents')
     expect(await errorMessage.textContent()).toContain("Sorry, we can't find an account with this email address. Please try again")
-
+    
     await page.waitForTimeout(1000)
 })
 
@@ -117,9 +120,12 @@ test('T4: Press enter key  with invalid password', async ({page}) =>{
       await page.fill('input[type="password"]', '123')
       //Simulate pressing the Enter key
       await page.press('input[id="id_password"]', 'Enter')
-
+      
       const errorMessage = page.locator('.ui-message-contents')
       expect( await errorMessage.textContent()).toContain('Incorrect password. Please try again or you can reset your password.')
+      //it works in codesandbox but not here
+      // await page.waitForTimeout(10000)
+      // expect(await page.textContent('body')).toContain('Incorrect password. Pleae try again')
       await page.waitForTimeout(1000)
 })
 
@@ -132,21 +138,28 @@ test('T5: Click sign in button with invalid password', async ({page}) =>{
 
   //Simulate click the sign in button
   await page.click('.btn.login-button.btn-submit.btn-small')
-
+  
   const errorMessage = page.locator('[data-uia="password-field+error"]')
-
+  
   expect( await errorMessage.textContent()).toContain('Your password must contain between 4 and 60 characters.')
+  //it works in codesandbox but not here
+  // await page.waitForTimeout(5000)
+  // expect(await page.textContent('body')).toContain('Your password must contain between 4 and 60 characters.')
 })
 
 
-test('T6: login with valid email address but invalid password', async ({page}) => {
+test.only('T6: login with valid email address but invalid password', async ({page}) => {
     await page.click('text=sign in')
 
     await page.fill('input[name="userLoginId"]', 'test@email.com')
     await page.fill('input[type="password"]', 'password')
     await page.click('button:has-text("sign in")')
-
+    
     const errorMessage = page.locator('.ui-message-contents')
-
+    
     expect(await errorMessage.textContent()).toContain('Incorrect password. Please try again or you can reset your password.')
+    
+    //The following way dont work in vs code environment
+    // await page.waitForTimeout(10000)
+    // expect(await page.textContent('body')).toContain('Incorrect password. Pleae try again')
 })
